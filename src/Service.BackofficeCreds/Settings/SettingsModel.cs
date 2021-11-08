@@ -13,5 +13,8 @@ namespace Service.BackofficeCreds.Settings
 
         [YamlProperty("BackofficeCreds.ElkLogs")]
         public LogElkSettings ElkLogs { get; set; }
+
+        [YamlProperty("BackofficeCreds.PostgresConnectionString")]
+        public string PostgresConnectionString { get; set; }
     }
 }

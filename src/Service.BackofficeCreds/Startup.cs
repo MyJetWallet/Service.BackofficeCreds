@@ -7,11 +7,13 @@ using Microsoft.Extensions.Hosting;
 using Autofac;
 using MyJetWallet.Sdk.GrpcMetrics;
 using MyJetWallet.Sdk.GrpcSchema;
+using MyJetWallet.Sdk.Postgres;
 using MyJetWallet.Sdk.Service;
 using Prometheus;
 using ProtoBuf.Grpc.Server;
 using Service.BackofficeCreds.Grpc;
 using Service.BackofficeCreds.Modules;
+using Service.BackofficeCreds.Postgres;
 using Service.BackofficeCreds.Services;
 using SimpleTrading.BaseMetrics;
 using SimpleTrading.ServiceStatusReporterConnector;
@@ -27,6 +29,9 @@ namespace Service.BackofficeCreds
             services.AddHostedService<ApplicationLifetimeManager>();
 
             services.AddMyTelemetry("SP-", Program.Settings.ZipkinUrl);
+            
+            services.AddDatabase(DatabaseContext.Schema, Program.Settings.PostgresConnectionString, 
+                o => new DatabaseContext(o));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

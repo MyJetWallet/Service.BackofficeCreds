@@ -14,6 +14,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="MyJetWallet.Sdk.GrpcMetrics" Version="2.0.2" />
     <PackageReference Include="MyJetWallet.Sdk.GrpcSchema" Version="1.0.6" />
+    <PackageReference Include="MyJetWallet.Sdk.Postgres" Version="1.2.0" />
     <PackageReference Include="MyJetWallet.Sdk.Service" Version="1.6.10" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="prometheus-net.AspNetCore" Version="5.0.1" />
@@ -26,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Service.BackofficeCreds.Domain\Service.BackofficeCreds.Domain.csproj" />
     <ProjectReference Include="..\Service.BackofficeCreds.Grpc\Service.BackofficeCreds.Grpc.csproj" />
+    <ProjectReference Include="..\Service.BackofficeCreds.Postgres\Service.BackofficeCreds.Postgres.csproj" />
   </ItemGroup>
 
   <ItemGroup>
