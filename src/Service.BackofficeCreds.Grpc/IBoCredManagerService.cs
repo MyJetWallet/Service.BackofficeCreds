@@ -5,7 +5,7 @@ using Service.BackofficeCreds.Grpc.Models;
 namespace Service.BackofficeCreds.Grpc
 {
     [ServiceContract]
-    public interface IBoCredService
+    public interface IBoCredManagerService
     {
         [OperationContract]
         Task<BaseResponse> CreateUserAsync(CreateUserRequest request);

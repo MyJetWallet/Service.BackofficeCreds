@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Reflection;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -8,25 +8,24 @@ using Service.BackofficeCreds.Grpc.Models;
 
 namespace Service.BackofficeCreds.Services
 {
-    public class BoCredService: IBoCredService
+    public class BoCredManagerService: IBoCredManagerService
     {
-        private readonly ILogger<BoCredService> _logger;
-        private readonly BoCredManager _boCredManager;
+        private readonly ILogger<BoCredManagerService> _logger;
+        private readonly BoCredManagerEngine _boCredManagerEngine;
 
-        public BoCredService(ILogger<BoCredService> logger, 
-            BoCredManager boCredManager)
+        public BoCredManagerService(ILogger<BoCredManagerService> logger, 
+            BoCredManagerEngine boCredManagerEngine)
         {
             _logger = logger;
-            _boCredManager = boCredManager;
+            _boCredManagerEngine = boCredManagerEngine;
         }
 
         public async Task<BaseResponse> CreateUserAsync(CreateUserRequest request)
         {
-            _logger.LogInformation("{methodName} received request: {requestJson}", 
-                MethodBase.GetCurrentMethod()?.Name, JsonConvert.SerializeObject(request));
+            _logger.LogInformation("CreateUserAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
             try
             {
-                await _boCredManager.CreateUserAsync(request.Email);
+                await _boCredManagerEngine.CreateUserAsync(request.Email);
                 return new BaseResponse()
                 {
                     Success = true
@@ -34,7 +33,7 @@ namespace Service.BackofficeCreds.Services
             }
             catch (Exception ex)
             {
-                var errorMessage = $"{MethodBase.GetCurrentMethod()?.Name} catch exception : {ex.Message}";
+                var errorMessage = $"CreateUserAsync catch exception : {ex.Message}";
                 _logger.LogError(ex, errorMessage);
                 return new BaseResponse()
                 {
@@ -46,11 +45,10 @@ namespace Service.BackofficeCreds.Services
 
         public async Task<BaseResponse> CreateRoleAsync(CreateRoleRequest request)
         {
-            _logger.LogInformation("{methodName} received request: {requestJson}", 
-                MethodBase.GetCurrentMethod()?.Name, JsonConvert.SerializeObject(request));
+            _logger.LogInformation("CreateRoleAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
             try
             {
-                await _boCredManager.CreateRoleAsync(request.Name);
+                await _boCredManagerEngine.CreateRoleAsync(request.Name);
                 return new BaseResponse()
                 {
                     Success = true
@@ -58,7 +56,7 @@ namespace Service.BackofficeCreds.Services
             }
             catch (Exception ex)
             {
-                var errorMessage = $"{MethodBase.GetCurrentMethod()?.Name} catch exception : {ex.Message}";
+                var errorMessage = $"CreateRoleAsync catch exception : {ex.Message}";
                 _logger.LogError(ex, errorMessage);
                 return new BaseResponse()
                 {
@@ -70,11 +68,10 @@ namespace Service.BackofficeCreds.Services
 
         public async Task<BaseResponse> SetupRolesAsync(SetupRolesRequest request)
         {
-            _logger.LogInformation("{methodName} received request: {requestJson}", 
-                MethodBase.GetCurrentMethod()?.Name, JsonConvert.SerializeObject(request));
+            _logger.LogInformation("SetupRolesAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
             try
             {
-                await _boCredManager.SetupRolesAsync(request.UserId, request.RolesId);
+                await _boCredManagerEngine.SetupRolesAsync(request.UserId, request.RolesId);
                 return new BaseResponse()
                 {
                     Success = true
@@ -82,7 +79,7 @@ namespace Service.BackofficeCreds.Services
             }
             catch (Exception ex)
             {
-                var errorMessage = $"{MethodBase.GetCurrentMethod()?.Name} catch exception : {ex.Message}";
+                var errorMessage = $"SetupRolesAsync catch exception : {ex.Message}";
                 _logger.LogError(ex, errorMessage);
                 return new BaseResponse()
                 {
@@ -94,11 +91,10 @@ namespace Service.BackofficeCreds.Services
 
         public async Task<BaseResponse> InitRightsAsync(InitRightsRequest request)
         {
-            _logger.LogInformation("{methodName} received request: {requestJson}", 
-                MethodBase.GetCurrentMethod()?.Name, JsonConvert.SerializeObject(request));
+            _logger.LogInformation("InitRightsAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
             try
             {
-                await _boCredManager.InitRightsAsync(request.Rights);
+                await _boCredManagerEngine.InitRightsAsync(request.Rights);
                 return new BaseResponse()
                 {
                     Success = true
@@ -106,7 +102,7 @@ namespace Service.BackofficeCreds.Services
             }
             catch (Exception ex)
             {
-                var errorMessage = $"{MethodBase.GetCurrentMethod()?.Name} catch exception : {ex.Message}";
+                var errorMessage = $"InitRightsAsync catch exception : {ex.Message}";
                 _logger.LogError(ex, errorMessage);
                 return new BaseResponse()
                 {
@@ -118,11 +114,10 @@ namespace Service.BackofficeCreds.Services
 
         public async Task<BaseResponse> RemoveUserAsync(RemoveUserRequest request)
         {
-            _logger.LogInformation("{methodName} received request: {requestJson}", 
-                MethodBase.GetCurrentMethod()?.Name, JsonConvert.SerializeObject(request));
+            _logger.LogInformation("RemoveUserAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
             try
             {
-                await _boCredManager.RemoveUserAsync(request.UserId);
+                await _boCredManagerEngine.RemoveUserAsync(request.UserId);
                 return new BaseResponse()
                 {
                     Success = true
@@ -130,7 +125,7 @@ namespace Service.BackofficeCreds.Services
             }
             catch (Exception ex)
             {
-                var errorMessage = $"{MethodBase.GetCurrentMethod()?.Name} catch exception : {ex.Message}";
+                var errorMessage = $"RemoveUserAsync catch exception : {ex.Message}";
                 _logger.LogError(ex, errorMessage);
                 return new BaseResponse()
                 {
@@ -142,11 +137,10 @@ namespace Service.BackofficeCreds.Services
 
         public async Task<BaseResponse> RemoveRoleAsync(RemoveRoleRequest request)
         {
-            _logger.LogInformation("{methodName} received request: {requestJson}", 
-                MethodBase.GetCurrentMethod()?.Name, JsonConvert.SerializeObject(request));
+            _logger.LogInformation("RemoveRoleAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
             try
             {
-                await _boCredManager.RemoveRoleAsync(request.RoleId);
+                await _boCredManagerEngine.RemoveRoleAsync(request.RoleId);
                 return new BaseResponse()
                 {
                     Success = true
@@ -154,7 +148,7 @@ namespace Service.BackofficeCreds.Services
             }
             catch (Exception ex)
             {
-                var errorMessage = $"{MethodBase.GetCurrentMethod()?.Name} catch exception : {ex.Message}";
+                var errorMessage = $"RemoveRoleAsync catch exception : {ex.Message}";
                 _logger.LogError(ex, errorMessage);
                 return new BaseResponse()
                 {

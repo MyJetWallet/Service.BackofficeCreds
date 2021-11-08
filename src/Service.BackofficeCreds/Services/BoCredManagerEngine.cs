@@ -8,12 +8,12 @@ using Service.BackofficeCreds.Postgres;
 
 namespace Service.BackofficeCreds.Services
 {
-    public class BoCredManager
+    public class BoCredManagerEngine
     {
-        private readonly ILogger<BoCredManager> _logger;
+        private readonly ILogger<BoCredManagerEngine> _logger;
         private readonly DatabaseContextFactory _databaseContextFactory;
 
-        public BoCredManager(ILogger<BoCredManager> logger, 
+        public BoCredManagerEngine(ILogger<BoCredManagerEngine> logger, 
             DatabaseContextFactory databaseContextFactory)
         {
             _logger = logger;

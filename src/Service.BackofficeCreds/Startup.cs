@@ -51,7 +51,7 @@ namespace Service.BackofficeCreds
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcSchema<BoCredService, IBoCredService>();
+                endpoints.MapGrpcSchema<BoCredManagerService, IBoCredManagerService>();
 
                 endpoints.MapGrpcSchemaRegistry();
 

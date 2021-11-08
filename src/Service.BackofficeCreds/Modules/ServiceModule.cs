@@ -16,7 +16,7 @@ namespace Service.BackofficeCreds.Modules
                 .SingleInstance();
             
             builder
-                .RegisterType<BoCredManager>()
+                .RegisterType<BoCredManagerEngine>()
                 .AsSelf()
                 .SingleInstance();
         }

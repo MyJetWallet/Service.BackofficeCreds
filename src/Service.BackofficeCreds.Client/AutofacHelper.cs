@@ -11,7 +11,7 @@ namespace Service.BackofficeCreds.Client
         {
             var factory = new BackofficeCredsClientFactory(grpcServiceUrl);
 
-            builder.RegisterInstance(factory.GetBoCredService()).As<IBoCredService>().SingleInstance();
+            builder.RegisterInstance(factory.GetBoCredService()).As<IBoCredManagerService>().SingleInstance();
         }
     }
 }
