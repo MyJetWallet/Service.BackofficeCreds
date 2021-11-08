@@ -3,9 +3,8 @@ using System.Runtime.Serialization;
 namespace Service.BackofficeCreds.Grpc.Models
 {
     [DataContract]
-    public class HelloRequest
+    public class RemoveUserRequest
     {
-        [DataMember(Order = 1)]
-        public string Name { get; set; }
+        [DataMember(Order = 1)] public string Email { get; set; }
     }
 }
