@@ -8,17 +8,17 @@ namespace Service.BackofficeCreds.Grpc
     public interface IBoCredService
     {
         [OperationContract]
-        Task<CreateUserResponse> CreateUserAsync(CreateUserRequest request);
+        Task<BaseResponse> CreateUserAsync(CreateUserRequest request);
         
         [OperationContract]
-        Task<SetupRolesResponse> SetupRolesAsync(SetupRolesRequest request);
+        Task<BaseResponse> SetupRolesAsync(SetupRolesRequest request);
         
         [OperationContract]
-        Task<InitRightsResponse> InitRightsAsync(InitRightsRequest request);
+        Task<BaseResponse> InitRightsAsync(InitRightsRequest request);
         
         [OperationContract]
-        Task<RemoveUserResponse> RemoveUserAsync(RemoveUserRequest request);
+        Task<BaseResponse> RemoveUserAsync(RemoveUserRequest request);
         [OperationContract]
-        Task<RemoveRoleResponse> RemoveRoleAsync(RemoveRoleRequest request);
+        Task<BaseResponse> RemoveRoleAsync(RemoveRoleRequest request);
     }
 }
