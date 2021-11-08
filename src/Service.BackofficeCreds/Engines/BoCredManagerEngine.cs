@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Service.BackofficeCreds.Domain.Models;
 using Service.BackofficeCreds.Postgres;
 
-namespace Service.BackofficeCreds.Services
+namespace Service.BackofficeCreds.Engines
 {
     public class BoCredManagerEngine
     {

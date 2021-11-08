@@ -7,11 +7,18 @@ namespace Service.BackofficeCreds.Client
 {
     public static class AutofacHelper
     {
-        public static void RegisterBackofficeCredsClient(this ContainerBuilder builder, string grpcServiceUrl)
+        public static void RegisterBackofficeCredsManagerClient(this ContainerBuilder builder, string grpcServiceUrl)
         {
             var factory = new BackofficeCredsClientFactory(grpcServiceUrl);
 
             builder.RegisterInstance(factory.GetBoCredService()).As<IBoCredManagerService>().SingleInstance();
+        }
+        
+        public static void RegisterBackofficeCredsAuthClient(this ContainerBuilder builder, string grpcServiceUrl)
+        {
+            var factory = new BackofficeCredsClientFactory(grpcServiceUrl);
+
+            builder.RegisterInstance(factory.GetBoAuthService()).As<IBoAuthService>().SingleInstance();
         }
     }
 }

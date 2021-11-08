@@ -12,5 +12,7 @@ namespace Service.BackofficeCreds.Client
         }
 
         public IBoCredManagerService GetBoCredService() => CreateGrpcService<IBoCredManagerService>();
+
+        public IBoAuthService GetBoAuthService() => CreateGrpcService<IBoAuthService>();
     }
 }

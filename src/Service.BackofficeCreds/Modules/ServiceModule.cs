@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Autofac.Core;
 using Autofac.Core.Registration;
+using Service.BackofficeCreds.Engines;
 using Service.BackofficeCreds.Postgres;
 using Service.BackofficeCreds.Services;
 

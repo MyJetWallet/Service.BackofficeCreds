@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Service.BackofficeCreds.Engines;
 using Service.BackofficeCreds.Grpc;
 using Service.BackofficeCreds.Grpc.Models;
 
