@@ -7,6 +7,5 @@ namespace Service.BackofficeCreds.Grpc.Models
     public class CreateUserRequest
     {
         [DataMember(Order = 1)] public string Email { get; set; }
-        [DataMember(Order = 2)] public List<string> Roles { get; set; }
     }
 }

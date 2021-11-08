@@ -11,10 +11,13 @@ namespace Service.BackofficeCreds.Services
     public class BoCredService: IBoCredService
     {
         private readonly ILogger<BoCredService> _logger;
+        private readonly BoCredManager _boCredManager;
 
-        public BoCredService(ILogger<BoCredService> logger)
+        public BoCredService(ILogger<BoCredService> logger, 
+            BoCredManager boCredManager)
         {
             _logger = logger;
+            _boCredManager = boCredManager;
         }
 
         public async Task<BaseResponse> CreateUserAsync(CreateUserRequest request)
@@ -23,7 +26,7 @@ namespace Service.BackofficeCreds.Services
                 MethodBase.GetCurrentMethod()?.Name, JsonConvert.SerializeObject(request));
             try
             {
-                // doSmth
+                await _boCredManager.CreateUserAsync(request.Email);
                 return new BaseResponse()
                 {
                     Success = true
@@ -47,7 +50,7 @@ namespace Service.BackofficeCreds.Services
                 MethodBase.GetCurrentMethod()?.Name, JsonConvert.SerializeObject(request));
             try
             {
-                // doSmth
+                await _boCredManager.SetupRolesAsync(request.UserId, request.RolesId);
                 return new BaseResponse()
                 {
                     Success = true
@@ -71,7 +74,7 @@ namespace Service.BackofficeCreds.Services
                 MethodBase.GetCurrentMethod()?.Name, JsonConvert.SerializeObject(request));
             try
             {
-                // doSmth
+                await _boCredManager.InitRightsAsync(request.Rights);
                 return new BaseResponse()
                 {
                     Success = true
@@ -95,7 +98,7 @@ namespace Service.BackofficeCreds.Services
                 MethodBase.GetCurrentMethod()?.Name, JsonConvert.SerializeObject(request));
             try
             {
-                // doSmth
+                await _boCredManager.RemoveUserAsync(request.UserId);
                 return new BaseResponse()
                 {
                     Success = true
@@ -119,7 +122,7 @@ namespace Service.BackofficeCreds.Services
                 MethodBase.GetCurrentMethod()?.Name, JsonConvert.SerializeObject(request));
             try
             {
-                // doSmth
+                await _boCredManager.RemoveRoleAsync(request.RoleId);
                 return new BaseResponse()
                 {
                     Success = true

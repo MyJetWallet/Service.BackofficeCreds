@@ -14,14 +14,14 @@ namespace Service.BackofficeCreds.Postgres
         private const string UserTableName = "user";
         private const string RoleTableName = "role";
         private const string UserInRoleTableName = "userinrole";
-        private const string RightTableName = "right";
+        public const string RightTableName = "right";
         private const string RightInRoleTableName = "rightinrole";
         
-        private DbSet<User> UserCollection { get; set; }
-        private DbSet<Role> RoleCollection { get; set; }
-        private DbSet<UserInRole> UserInRoleCollection { get; set; }
-        private DbSet<Right> RightCollection { get; set; }
-        private DbSet<RightInRole> RightInRoleCollection { get; set; }
+        public DbSet<User> UserCollection { get; set; }
+        public DbSet<Role> RoleCollection { get; set; }
+        public DbSet<UserInRole> UserInRoleCollection { get; set; }
+        public DbSet<Right> RightCollection { get; set; }
+        public DbSet<RightInRole> RightInRoleCollection { get; set; }
         
         public DatabaseContext(DbContextOptions options) : base(options)
         {
@@ -114,24 +114,6 @@ namespace Service.BackofficeCreds.Postgres
             modelBuilder.Entity<User>().Property(e => e.Email).HasMaxLength(256);
             
             modelBuilder.Entity<User>().HasIndex(e => e.Email).IsUnique();
-        }
-        public async Task UpsertUser(User user)
-        {
-            user.Email = user.Email.ToLower();
-            
-            await UserCollection
-                .Upsert(user)
-                .On(e => e.Email)
-                .RunAsync();
-        }
-        public List<User> GetUserList()
-        {
-            return UserCollection.ToList();
-        }
-        
-        public User GetUser(string email)
-        {
-            return UserCollection.FirstOrDefault(e => e.Email == email.ToLower());
         }
     }
 }
