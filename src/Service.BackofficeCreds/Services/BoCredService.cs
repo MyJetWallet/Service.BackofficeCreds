@@ -44,6 +44,30 @@ namespace Service.BackofficeCreds.Services
             }
         }
 
+        public async Task<BaseResponse> CreateRoleAsync(CreateRoleRequest request)
+        {
+            _logger.LogInformation("{methodName} received request: {requestJson}", 
+                MethodBase.GetCurrentMethod()?.Name, JsonConvert.SerializeObject(request));
+            try
+            {
+                await _boCredManager.CreateRoleAsync(request.Name);
+                return new BaseResponse()
+                {
+                    Success = true
+                };
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = $"{MethodBase.GetCurrentMethod()?.Name} catch exception : {ex.Message}";
+                _logger.LogError(ex, errorMessage);
+                return new BaseResponse()
+                {
+                    Success = false,
+                    ErrorMessage = errorMessage
+                };
+            }
+        }
+
         public async Task<BaseResponse> SetupRolesAsync(SetupRolesRequest request)
         {
             _logger.LogInformation("{methodName} received request: {requestJson}", 

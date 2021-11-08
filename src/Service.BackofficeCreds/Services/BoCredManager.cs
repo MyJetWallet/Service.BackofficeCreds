@@ -23,10 +23,16 @@ namespace Service.BackofficeCreds.Services
         public async Task CreateUserAsync(string email)
         {
             await using var ctx = _databaseContextFactory.Create();
-            ctx.UserCollection.Upsert(new User() {Email = email}).On(e => e.Email);
+            await ctx.UserCollection.Upsert(new User() {Email = email}).On(e => e.Email).RunAsync();
+        }
+        
+        public async Task CreateRoleAsync(string name)
+        {
+            await using var ctx = _databaseContextFactory.Create();
+            await ctx.RoleCollection.Upsert(new Role() {Name = name}).On(e => e.Name).RunAsync();
         }
 
-        public async Task SetupRolesAsync(long userId, IEnumerable<long> roles)
+        public async Task SetupRolesAsync(long userId, List<long> roles)
         {
             await using var ctx = _databaseContextFactory.Create();
 
@@ -34,7 +40,13 @@ namespace Service.BackofficeCreds.Services
             if (actualRoles.Any())
                 ctx.UserInRoleCollection.RemoveRange(actualRoles);
             
-            await ctx.UserInRoleCollection.AddRangeAsync(roles.Select(e => new UserInRole(){UserId = userId, RoleId = e}));
+            var userInRoles = ctx.UserInRoleCollection.Where(e => e.UserId == userId);
+            if (userInRoles.Any())
+                ctx.UserInRoleCollection.RemoveRange(userInRoles);
+            
+            if (roles != null && roles.Any())
+                await ctx.UserInRoleCollection.AddRangeAsync(roles.Select(e => new UserInRole(){UserId = userId, RoleId = e}));
+
             await ctx.SaveChangesAsync();
         }
 
