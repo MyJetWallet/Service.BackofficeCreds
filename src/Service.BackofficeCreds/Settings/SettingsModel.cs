@@ -1,0 +1,17 @@
+﻿using MyJetWallet.Sdk.Service;
+using MyYamlParser;
+
+namespace Service.BackofficeCreds.Settings
+{
+    public class SettingsModel
+    {
+        [YamlProperty("BackofficeCreds.SeqServiceUrl")]
+        public string SeqServiceUrl { get; set; }
+
+        [YamlProperty("BackofficeCreds.ZipkinUrl")]
+        public string ZipkinUrl { get; set; }
+
+        [YamlProperty("BackofficeCreds.ElkLogs")]
+        public LogElkSettings ElkLogs { get; set; }
+    }
+}
