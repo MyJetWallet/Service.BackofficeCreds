@@ -15,26 +15,78 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in _usersWithRoles)
+        @foreach (var userWithRole in _usersWithRoles)
         {
             <tr>
-                <td>@user.User.Id</td>
-                <td>@user.User.Email</td>
+                <td>@userWithRole.User.Id</td>
+                <td>@userWithRole.User.Email</td>
                 <td>
-                    @foreach (var role in user.Roles)
+                    @foreach (var role in userWithRole.Roles)
                     {
                         <span style="background: lightblue; margin-left: 5px; border-radius: 5px"><span style="margin: 5px">@role.Name</span></span>
                     }
                 </td>
-                <td>button</td>
+                <td>
+                    <ul class="nav">
+                        <li><button type="button" class="btn btn-info" @onclick="@(() => { ChangeRoles(userWithRole); })">Change Roles</button></li>
+                    </ul>
+                </td>
+                <td>
+                    <ul class="nav">
+                        <li><button type="button" class="btn btn-danger" @onclick="@(async () => { await RemoveUser(userWithRole.User); })">Remove</button></li>
+                    </ul>
+                </td>
             </tr>
         }
     </tbody>
 </table>
 
+@if (_changeRolesWindowOpen)
+{
+    <div>
+        <BaseTwoButtonsDialog
+            Caption=@GetChangeRolesDialogCaption()
+            OnClose="CancelChangeRoles"
+            YesButtonCaption="Save"
+            NoButtonCaption="Cancel"
+            OnSubmit="SubmitChangeRoles">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Is Supervisor</th>
+                        <th>Chosen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var chosenRole in _chosenRoles)
+                {
+                    <tr>
+                        <td>@chosenRole.Role.Name</td>
+                        <td>@chosenRole.Role.IsSupervisor</td>
+                        <td>
+                            <ul class="nav">
+                                <li>
+                                    <input type="checkbox" style="width: 40px" @bind="chosenRole.Chosen"/>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </BaseTwoButtonsDialog>
+    </div>
+}
+
 @code {
     private List<UserWithRole> _usersWithRoles = new();
-    
+    private List<Role> _roles = new();
+
+    private bool _changeRolesWindowOpen = false;
+    private UserWithRole _changeRoleUserTarget = new();
+    private readonly List<ChosenRole> _chosenRoles = new();
+
     protected override void OnInitialized()
     {
         RefreshData().GetAwaiter().GetResult();
@@ -44,6 +96,54 @@
     private async Task RefreshData()
     {
         _usersWithRoles = await _credManagerEngine.GetUsersWithRolesAsync();
+        _roles = await _credManagerEngine.GetRoles();
         StateHasChanged();
+    }
+
+    private async Task RemoveUser(User user)
+    {
+        await _credManagerEngine.RemoveUserAsync(user.Id);
+        await RefreshData();
+    }
+
+    private void ChangeRoles(UserWithRole userWithRole)
+    {
+        _changeRolesWindowOpen = true;
+        _changeRoleUserTarget = userWithRole;
+        _chosenRoles.AddRange(_roles.Select(e => new ChosenRole()
+        {
+            Role = e,
+            Chosen = _changeRoleUserTarget.Roles.Any(x => x.Id == e.Id)
+        }));
+        StateHasChanged();
+    }
+
+    private void CancelChangeRoles()
+    {
+        _changeRolesWindowOpen = false;
+        _changeRoleUserTarget = new UserWithRole();
+        _chosenRoles.Clear();
+        StateHasChanged();
+    }
+
+    private async Task SubmitChangeRoles()
+    {
+        _changeRolesWindowOpen = false;
+        StateHasChanged();
+        
+        await _credManagerEngine.SetupRolesAsync(_changeRoleUserTarget.User.Id, _chosenRoles.Where(e => e.Chosen).Select(e => e.Role.Id).ToList());
+        await RefreshData();
+        CancelChangeRoles();
+    }
+
+    private string GetChangeRolesDialogCaption()
+    {
+        return "Choose rights for " + _changeRoleUserTarget.User.Email;
+    }
+
+    private class ChosenRole
+    {
+        public Role Role { get; set; }
+        public bool Chosen { get; set; }
     }
 }

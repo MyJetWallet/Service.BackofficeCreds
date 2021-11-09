@@ -137,5 +137,12 @@ namespace Service.BackofficeCreds.Blazor.Engines
             
             await ctx.SaveChangesAsync();
         }
+
+        public async Task<List<Role>> GetRoles()
+        {
+            await using var ctx = _databaseContextFactory.Create();
+            var roles = ctx.RoleCollection.ToList();
+            return roles;
+        }
     }
 }

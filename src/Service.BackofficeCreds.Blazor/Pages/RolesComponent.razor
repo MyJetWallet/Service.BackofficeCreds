@@ -10,6 +10,7 @@
         <tr>
             <th>Role Id</th>
             <th>Name</th>
+            <th>Is Supervisor</th>
             <th>Rights</th>
             <th></th>
             <th></th>
@@ -21,6 +22,7 @@
             <tr>
                 <td>@role.Role.Id</td>
                 <td>@role.Role.Name</td>
+                <td>@role.Role.IsSupervisor</td>
                 <td>
                     @foreach (var right in role.Rights)
                     {
@@ -32,7 +34,7 @@
                 </td>
                 <td>
                     <ul class="nav">
-                        <li><button type="button" class="btn btn-outline-danger" @onclick="@(async () => { await RemoveRole(role.Role); })">Remove</button></li>
+                        <li><button type="button" class="btn btn-danger" @onclick="@(async () => { await RemoveRole(role.Role); })">Remove</button></li>
                     </ul>
                 </td>
             </tr>
