@@ -16,6 +16,54 @@ namespace Service.BackofficeCreds.Blazor.Engines
             _databaseContextFactory = databaseContextFactory;
         }
 
+        public async Task<List<UserWithRole>> GetUsersWithRolesAsync()
+        {
+            await using var ctx = _databaseContextFactory.Create();
+            var users = ctx.UserCollection.ToList();
+            var roles = ctx.RoleCollection.ToList();
+            var userInRole = ctx.UserInRoleCollection.ToList();
+
+            var usersWithRoles = new List<UserWithRole>();
+            
+            foreach (var user in users)
+            {
+                var userWithRoles = new UserWithRole() {User = user, Roles = new List<Role>()};
+                var userRoles = userInRole.Where(e => e.UserId == user.Id).ToList();
+                foreach (var roleId in userRoles.Select(e => e.RoleId).Distinct())
+                {
+                    var role = roles.FirstOrDefault(e => e.Id == roleId);
+                    if (role != null)
+                        userWithRoles.Roles.Add(role);
+                }
+                usersWithRoles.Add(userWithRoles);
+            }
+            return usersWithRoles;
+        }
+        
+        public async Task<List<RoleWithRights>> GetRolesWithRights()
+        {
+            await using var ctx = _databaseContextFactory.Create();
+            var roles = ctx.RoleCollection.ToList();
+            var rights = ctx.RightCollection.ToList();
+            var rightInRoles = ctx.RightInRoleCollection.ToList();
+
+            var rolesWithRights = new List<RoleWithRights>();
+
+            foreach (var role in roles)
+            {
+                var roleWithRights = new RoleWithRights() {Role = role, Rights = new List<Right>()};
+                var rolesRights = rightInRoles.Where(e => e.RoleId == role.Id);
+                foreach (var rightId in rolesRights.Select(e => e.RightId).Distinct())
+                {
+                    var right = rights.FirstOrDefault(e => e.Id == rightId);
+                    if (right != null)
+                        roleWithRights.Rights.Add(right);
+                }
+                rolesWithRights.Add(roleWithRights);
+            }
+            return rolesWithRights;
+        }
+
         public async Task CreateUserAsync(string email)
         {
             await using var ctx = _databaseContextFactory.Create();

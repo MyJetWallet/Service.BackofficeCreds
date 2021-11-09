@@ -1,0 +1,49 @@
+@page "/rightmanager"
+
+@using Service.BackofficeCreds.Blazor.Engines
+@using Service.BackofficeCreds.Domain.Models
+
+@inject BoCredManagerEngine _credManagerEngine
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>User Id</th>
+            <th>Email</th>
+            <th>Roles</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in _usersWithRoles)
+        {
+            <tr>
+                <td>@user.User.Id</td>
+                <td>@user.User.Email</td>
+                <td>
+                    @foreach (var role in user.Roles)
+                    {
+                        <span style="background: lightblue; margin-left: 5px; border-radius: 5px"><span style="margin: 5px">@role.Name</span></span>
+                    }
+                </td>
+                <td>button</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<UserWithRole> _usersWithRoles = new();
+    
+    protected override void OnInitialized()
+    {
+        RefreshData().GetAwaiter().GetResult();
+        base.OnInitialized();
+    }
+
+    private async Task RefreshData()
+    {
+        _usersWithRoles = await _credManagerEngine.GetUsersWithRolesAsync();
+        StateHasChanged();
+    }
+}

@@ -1,5 +1,7 @@
 ﻿using Autofac;
 using Service.BackofficeCreds.Blazor.Engines;
+using Service.BackofficeCreds.Blazor.Services;
+using Service.BackofficeCreds.Grpc;
 using Service.BackofficeCreds.Postgres;
 
 namespace Service.BackofficeCreds.Blazor.Modules

@@ -1,0 +1,63 @@
+@page "/roles"
+
+@using Service.BackofficeCreds.Blazor.Engines
+@using Service.BackofficeCreds.Domain.Models
+
+@inject BoCredManagerEngine _credManagerEngine
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Role Id</th>
+            <th>Name</th>
+            <th>Rights</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var role in _roles)
+        {
+            <tr>
+                <td>@role.Role.Id</td>
+                <td>@role.Role.Name</td>
+                <td>
+                    @foreach (var right in role.Rights)
+                    {
+                        <span style="background: lightblue; margin-left: 5px; border-radius: 5px"><span style="margin: 5px">@right.Name</span></span>
+                    }
+                </td>
+                <td>
+                    change rights
+                </td>
+                <td>
+                    <ul class="nav">
+                        <li><button type="button" class="btn btn-outline-danger" @onclick="@(async () => { await RemoveRole(role.Role); })">Remove</button></li>
+                    </ul>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<RoleWithRights> _roles = new();
+    
+    protected override void OnInitialized()
+    {
+        RefreshData().GetAwaiter().GetResult();
+        base.OnInitialized();
+    }
+
+    private async Task RefreshData()
+    {
+        _roles = await _credManagerEngine.GetRolesWithRights();
+        StateHasChanged();
+    }
+
+    private async Task RemoveRole(Role role)
+    {
+        await _credManagerEngine.RemoveRoleAsync(role.Id);
+        await RefreshData();
+    }
+}

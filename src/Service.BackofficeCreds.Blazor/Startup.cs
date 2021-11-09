@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Autofac;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,7 +9,6 @@ using MyJetWallet.Sdk.GrpcSchema;
 using MyJetWallet.Sdk.Postgres;
 using MyJetWallet.Sdk.Service;
 using Prometheus;
-using Service.BackofficeCreds.Blazor.Data;
 using Service.BackofficeCreds.Blazor.Modules;
 using Service.BackofficeCreds.Blazor.Services;
 using Service.BackofficeCreds.Grpc;
@@ -39,14 +32,9 @@ namespace Service.BackofficeCreds.Blazor
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
-            
             services.BindCodeFirstGrpc();
-            
             services.AddHostedService<ApplicationLifetimeManager>();
-
             services.AddMyTelemetry("SP-", Program.Settings.ZipkinUrl);
-            
             services.AddDatabase(DatabaseContext.Schema, Program.Settings.PostgresConnectionString, 
                 o => new DatabaseContext(o));
         }
