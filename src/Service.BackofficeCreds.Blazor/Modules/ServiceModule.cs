@@ -17,6 +17,11 @@ namespace Service.BackofficeCreds.Blazor.Modules
                 .RegisterType<BoCredManagerEngine>()
                 .AsSelf()
                 .SingleInstance();
+            
+            builder
+                .RegisterType<BoAuthEngine>()
+                .AsSelf()
+                .SingleInstance();
         }
     }
 }

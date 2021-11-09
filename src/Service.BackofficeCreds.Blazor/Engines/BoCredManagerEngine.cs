@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Service.BackofficeCreds.Domain.Models;
 using Service.BackofficeCreds.Postgres;
 
@@ -10,13 +9,10 @@ namespace Service.BackofficeCreds.Blazor.Engines
 {
     public class BoCredManagerEngine
     {
-        private readonly ILogger<BoCredManagerEngine> _logger;
         private readonly DatabaseContextFactory _databaseContextFactory;
 
-        public BoCredManagerEngine(ILogger<BoCredManagerEngine> logger, 
-            DatabaseContextFactory databaseContextFactory)
+        public BoCredManagerEngine(DatabaseContextFactory databaseContextFactory)
         {
-            _logger = logger;
             _databaseContextFactory = databaseContextFactory;
         }
 
