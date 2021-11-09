@@ -1,0 +1,40 @@
+@page "/rights"
+
+@using Service.BackofficeCreds.Blazor.Engines
+@using Service.BackofficeCreds.Domain.Models
+
+@inject BoCredManagerEngine _credManagerEngine
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Right Id</th>
+        <th>Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var right in _rights)
+    {
+        <tr>
+            <td>@right.Id</td>
+            <td>@right.Name</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+    private List<Right> _rights = new();
+    
+    protected override void OnInitialized()
+    {
+        RefreshData().GetAwaiter().GetResult();
+        base.OnInitialized();
+    }
+
+    private async Task RefreshData()
+    {
+        _rights = await _credManagerEngine.GetRights();
+        StateHasChanged();
+    }
+}
