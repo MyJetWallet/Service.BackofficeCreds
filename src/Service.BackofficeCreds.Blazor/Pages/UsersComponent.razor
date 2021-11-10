@@ -5,6 +5,10 @@
 
 @inject BoCredManagerEngine _credManagerEngine
 
+<ul class="nav">
+    <li><button type="button" class="btn-outline-secondary btn" @onclick="CreateUser">Create user</button></li>
+</ul>
+
 <table class="table">
     <thead>
         <tr>
@@ -79,6 +83,22 @@
     </div>
 }
 
+@if (_createUserWindowOpen)
+{
+    <div>
+        <BaseTwoButtonsDialog
+            Caption="Create new user"
+            OnClose="CancelCreateUser"
+            YesButtonCaption="Save"
+            NoButtonCaption="Cancel"
+            OnSubmit="SubmitCreateUser">
+            <ul class="nav">
+                <li><span style="margin-left: 10px; vertical-align: center">Email : </span><input type="text" style="width: auto" @bind="_newUserEmail"/></li>
+            </ul>
+        </BaseTwoButtonsDialog>
+    </div>
+}
+
 @code {
     private List<UserWithRole> _usersWithRoles = new();
     private List<Role> _roles = new();
@@ -86,6 +106,9 @@
     private bool _changeRolesWindowOpen = false;
     private UserWithRole _changeRoleUserTarget = new();
     private readonly List<ChosenRole> _chosenRoles = new();
+    
+    private bool _createUserWindowOpen = false;
+    private string _newUserEmail = string.Empty;
 
     protected override void OnInitialized()
     {
@@ -145,5 +168,31 @@
     {
         public Role Role { get; set; }
         public bool Chosen { get; set; }
+    }
+    
+    private void CreateUser()
+    {
+        _createUserWindowOpen = true;
+        _newUserEmail = string.Empty;
+        
+        StateHasChanged();
+    }
+
+    private void CancelCreateUser()
+    {
+        _createUserWindowOpen = false;
+        _newUserEmail = string.Empty;
+        
+        StateHasChanged();
+    }
+
+    private async Task SubmitCreateUser()
+    {
+        _createUserWindowOpen = false;
+        StateHasChanged();
+
+        await _credManagerEngine.CreateUserAsync(_newUserEmail);
+        await RefreshData();
+        CancelCreateUser();
     }
 }
