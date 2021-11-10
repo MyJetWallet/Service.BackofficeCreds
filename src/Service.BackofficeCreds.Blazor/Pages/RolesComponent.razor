@@ -5,6 +5,10 @@
 
 @inject BoCredManagerEngine _credManagerEngine
 
+<ul class="nav">
+    <li><button type="button" class="btn-outline-secondary btn" @onclick="CreateRole">Create role</button></li>
+</ul>
+
 <table class="table">
     <thead>
         <tr>
@@ -55,10 +59,10 @@
             OnSubmit="SubmitChangeRights">
             <table class="table">
                 <thead>
-                    <tr>
-                        <th>Right</th>
-                        <th>Chosen</th>
-                    </tr>
+                <tr>
+                    <th>Right</th>
+                    <th>Chosen</th>
+                </tr>
                 </thead>
                 <tbody>
                 @foreach (var chosenRight in _chosenRights)
@@ -80,6 +84,22 @@
     </div>
 }
 
+@if (_createRoleWindowOpen)
+{
+    <div>
+        <BaseTwoButtonsDialog
+            Caption="Create new role"
+            OnClose="CancelCreateRole"
+            YesButtonCaption="Save"
+            NoButtonCaption="Cancel"
+            OnSubmit="SubmitCreateRole">
+            <ul class="nav">
+                <li><span style="margin-left: 10px; vertical-align: center">Name : </span><input type="text" style="width: auto" @bind="_newRoleName"/></li>
+            </ul>
+        </BaseTwoButtonsDialog>
+    </div>
+}
+
 @code {
     private List<RoleWithRights> _roles = new();
     private List<Right> _rights = new List<Right>();
@@ -87,6 +107,9 @@
     private bool _changeRightsWindowOpen = false;
     private RoleWithRights _changeRightsRoleTarget = new();
     private readonly List<ChosenRight> _chosenRights = new();
+
+    private bool _createRoleWindowOpen = false;
+    private string _newRoleName = string.Empty;
 
     protected override void OnInitialized()
     {
@@ -145,5 +168,31 @@
     {
         public Right Right { get; set; }
         public bool Chosen { get; set; }
+    }
+
+    private void CreateRole()
+    {
+        _createRoleWindowOpen = true;
+        _newRoleName = string.Empty;
+        
+        StateHasChanged();
+    }
+
+    private void CancelCreateRole()
+    {
+        _createRoleWindowOpen = false;
+        _newRoleName = string.Empty;
+        
+        StateHasChanged();
+    }
+
+    private async Task SubmitCreateRole()
+    {
+        _createRoleWindowOpen = false;
+        StateHasChanged();
+
+        await _credManagerEngine.CreateRoleAsync(_newRoleName);
+        await RefreshData();
+        CancelCreateRole();
     }
 }
