@@ -83,13 +83,22 @@ namespace Service.BackofficeCreds.Blazor.Engines
             var actualRoles = ctx.UserInRoleCollection.Where(e => e.UserId == userId);
             if (actualRoles.Any())
                 ctx.UserInRoleCollection.RemoveRange(actualRoles);
-            
-            var userInRoles = ctx.UserInRoleCollection.Where(e => e.UserId == userId);
-            if (userInRoles.Any())
-                ctx.UserInRoleCollection.RemoveRange(userInRoles);
-            
+
             if (roles != null && roles.Any())
                 await ctx.UserInRoleCollection.AddRangeAsync(roles.Select(e => new UserInRole(){UserId = userId, RoleId = e}));
+
+            await ctx.SaveChangesAsync();
+        }
+        public async Task SetupRightsAsync(long roleId, List<long> rights)
+        {
+            await using var ctx = _databaseContextFactory.Create();
+
+            var actualRights = ctx.RightInRoleCollection.Where(e => e.RoleId == roleId);
+            if (actualRights.Any())
+                ctx.RightInRoleCollection.RemoveRange(actualRights);
+
+            if (rights != null && rights.Any())
+                await ctx.RightInRoleCollection.AddRangeAsync(rights.Select(e => new RightInRole() {RoleId = roleId, RightId = e}));
 
             await ctx.SaveChangesAsync();
         }

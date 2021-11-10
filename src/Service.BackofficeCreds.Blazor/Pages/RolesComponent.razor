@@ -17,24 +17,26 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var role in _roles)
+        @foreach (var roleWithRights in _roles)
         {
             <tr>
-                <td>@role.Role.Id</td>
-                <td>@role.Role.Name</td>
-                <td>@role.Role.IsSupervisor</td>
+                <td>@roleWithRights.Role.Id</td>
+                <td>@roleWithRights.Role.Name</td>
+                <td>@roleWithRights.Role.IsSupervisor</td>
                 <td>
-                    @foreach (var right in role.Rights)
+                    @foreach (var right in roleWithRights.Rights)
                     {
                         <span style="background: lightblue; margin-left: 5px; border-radius: 5px"><span style="margin: 5px">@right.Name</span></span>
                     }
                 </td>
                 <td>
-                    change rights
+                    <ul class="nav">
+                        <li><button type="button" class="btn btn-info" @onclick="@(() => { ChangeRights(roleWithRights); })">Change Rights</button></li>
+                    </ul>
                 </td>
                 <td>
                     <ul class="nav">
-                        <li><button type="button" class="btn btn-danger" @onclick="@(async () => { await RemoveRole(role.Role); })">Remove</button></li>
+                        <li><button type="button" class="btn btn-danger" @onclick="@(async () => { await RemoveRole(roleWithRights.Role); })">Remove</button></li>
                     </ul>
                 </td>
             </tr>
@@ -42,9 +44,50 @@
     </tbody>
 </table>
 
+@if (_changeRightsWindowOpen)
+{
+    <div>
+        <BaseTwoButtonsDialog
+            Caption=@GetChangeRightsDialogCaption()
+            OnClose="CancelChangeRights"
+            YesButtonCaption="Save"
+            NoButtonCaption="Cancel"
+            OnSubmit="SubmitChangeRights">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Right</th>
+                        <th>Chosen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var chosenRight in _chosenRights)
+                {
+                    <tr>
+                        <td>@chosenRight.Right.Name</td>
+                        <td>
+                            <ul class="nav">
+                                <li>
+                                    <input type="checkbox" style="width: 40px" @bind="chosenRight.Chosen"/>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </BaseTwoButtonsDialog>
+    </div>
+}
+
 @code {
     private List<RoleWithRights> _roles = new();
+    private List<Right> _rights = new List<Right>();
     
+    private bool _changeRightsWindowOpen = false;
+    private RoleWithRights _changeRightsRoleTarget = new();
+    private readonly List<ChosenRight> _chosenRights = new();
+
     protected override void OnInitialized()
     {
         RefreshData().GetAwaiter().GetResult();
@@ -54,6 +97,7 @@
     private async Task RefreshData()
     {
         _roles = await _credManagerEngine.GetRolesWithRights();
+        _rights = await _credManagerEngine.GetRights();
         StateHasChanged();
     }
 
@@ -61,5 +105,45 @@
     {
         await _credManagerEngine.RemoveRoleAsync(role.Id);
         await RefreshData();
+    }
+
+    private void ChangeRights(RoleWithRights roleWithRights)
+    {
+        _changeRightsWindowOpen = true;
+        _changeRightsRoleTarget = roleWithRights;
+        _chosenRights.AddRange(_rights.Select(e => new ChosenRight()
+        {
+            Right = e,
+            Chosen = _changeRightsRoleTarget.Rights.Any(x => x.Id == e.Id)
+        }));
+        StateHasChanged();
+    }
+    
+    private string GetChangeRightsDialogCaption()
+    {
+        return "Choose rights for " + _changeRightsRoleTarget.Role.Name;
+    }
+
+    private void CancelChangeRights()
+    {
+        _changeRightsWindowOpen = false;
+        _changeRightsRoleTarget = new();
+        _chosenRights.Clear();
+        StateHasChanged();
+    }
+
+    private async Task SubmitChangeRights()
+    {
+        _changeRightsWindowOpen = false;
+        StateHasChanged();
+        
+        await _credManagerEngine.SetupRightsAsync(_changeRightsRoleTarget.Role.Id, _chosenRights.Where(e => e.Chosen).Select(e => e.Right.Id).ToList());
+        await RefreshData();
+        CancelChangeRights();
+    }
+    private class ChosenRight
+    {
+        public Right Right { get; set; }
+        public bool Chosen { get; set; }
     }
 }
