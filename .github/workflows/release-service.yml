@@ -31,7 +31,7 @@ jobs:
       run: ls
 
     - name: Publish Service
-      run: dotnet publish ./src/Service.BackofficeCreds/Service.BackofficeCreds.csproj --configuration Release /p:AssemblyVersion=${GITHUB_REF#refs/tags/} --output ./publish-api
+      run: dotnet publish ./src/Service.BackofficeCreds.Blazor/Service.BackofficeCreds.Blazor.csproj --configuration Release /p:AssemblyVersion=${GITHUB_REF#refs/tags/} --output ./publish-api
 
     - name: Check Service dir
       run: ls ./publish-api
