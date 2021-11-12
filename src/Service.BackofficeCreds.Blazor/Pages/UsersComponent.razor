@@ -94,12 +94,24 @@
             YesButtonCaption="Save"
             NoButtonCaption="Cancel"
             OnSubmit="SubmitCreateUser">
-            <ul class="nav">
-                <li><span style="margin-left: 10px; vertical-align: center">Email : </span><input type="text" style="width: auto" @bind="_newUser.Email"/></li>
-                <li><span style="margin-left: 10px; vertical-align: center">Phone : </span><input type="text" style="width: auto" @bind="_newUser.Phone"/></li>
-                <li><span style="margin-left: 10px; vertical-align: center">Telegram : </span><input type="text" style="width: auto" @bind="_newUser.Telegram"/></li>
-                <li><span style="margin-left: 10px; vertical-align: center">IsActive : </span><input type="text" style="width: auto" @bind="_newUser.IsActive"/></li>
-            </ul>
+            <table>
+                <tr>
+                    <td>Email</td>
+                    <td><input type="text" class="form-control" @bind=_newUser.Email/></td>
+                </tr>
+                <tr>
+                    <td>Phone</td>
+                    <td><input type="text" class="form-control" @bind=_newUser.Phone/></td>
+                </tr>
+                <tr>
+                    <td>Telegram</td>
+                    <td><input type="text" class="form-control" @bind=_newUser.Telegram/></td>
+                </tr>
+                <tr>
+                    <td>IsActive</td>
+                    <td><input type="checkbox" class="form-control" @bind=_newUser.IsActive/></td>
+                </tr>
+            </table>
         </BaseTwoButtonsDialog>
     </div>
 }
