@@ -5,6 +5,6 @@ namespace Service.BackofficeCreds.Grpc.Models
     [DataContract]
     public class RemoveUserRequest
     {
-        [DataMember(Order = 1)] public long UserId { get; set; }
+        [DataMember(Order = 1)] public string UserEmail { get; set; }
     }
 }

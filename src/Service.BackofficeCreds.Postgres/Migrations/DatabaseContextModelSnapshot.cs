@@ -30,9 +30,12 @@ namespace Service.BackofficeCreds.Postgres.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
+                    b.Property<string>("Service")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("Name", "Service")
                         .IsUnique();
 
                     b.ToTable("right");
@@ -48,12 +51,12 @@ namespace Service.BackofficeCreds.Postgres.Migrations
                     b.Property<long>("RightId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("RoleId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("RoleName")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RightId", "RoleId")
+                    b.HasIndex("RightId", "RoleName")
                         .IsUnique();
 
                     b.ToTable("rightinrole");
@@ -61,57 +64,53 @@ namespace Service.BackofficeCreds.Postgres.Migrations
 
             modelBuilder.Entity("Service.BackofficeCreds.Domain.Models.Role", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<bool>("IsSupervisor")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.HasKey("Id");
+                    b.Property<bool>("IsSupervisor")
+                        .HasColumnType("boolean");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
+                    b.HasKey("Name");
 
                     b.ToTable("role");
 
                     b.HasData(
                         new
                         {
-                            Id = 1L,
-                            IsSupervisor = true,
-                            Name = "Supervisor"
+                            Name = "SupervisorRole",
+                            IsSupervisor = true
                         });
                 });
 
             modelBuilder.Entity("Service.BackofficeCreds.Domain.Models.User", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.HasKey("Id");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
+                    b.Property<string>("Phone")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("Telegram")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.HasKey("Email");
 
                     b.ToTable("user");
 
                     b.HasData(
                         new
                         {
-                            Id = 1L,
-                            Email = "Supervisor"
+                            Email = "Supervisor",
+                            IsActive = true,
+                            Phone = "empty",
+                            Telegram = "empty"
                         });
                 });
 
@@ -122,15 +121,15 @@ namespace Service.BackofficeCreds.Postgres.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<long>("RoleId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("RoleName")
+                        .HasColumnType("text");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId", "RoleId")
+                    b.HasIndex("UserEmail", "RoleName")
                         .IsUnique();
 
                     b.ToTable("userinrole");
@@ -139,8 +138,8 @@ namespace Service.BackofficeCreds.Postgres.Migrations
                         new
                         {
                             Id = 1L,
-                            RoleId = 1L,
-                            UserId = 1L
+                            RoleName = "SupervisorRole",
+                            UserEmail = "Supervisor"
                         });
                 });
 #pragma warning restore 612, 618

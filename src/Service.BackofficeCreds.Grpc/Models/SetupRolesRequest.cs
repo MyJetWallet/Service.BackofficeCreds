@@ -7,7 +7,7 @@ namespace Service.BackofficeCreds.Grpc.Models
     [DataContract]
     public class SetupRolesRequest
     {
-        [DataMember(Order = 1)] public long UserId { get; set; }
-        [DataMember(Order = 2)] public List<long> RolesId { get; set; }
+        [DataMember(Order = 1)] public string UserEmail { get; set; }
+        [DataMember(Order = 2)] public List<string> RolesName { get; set; }
     }
 }

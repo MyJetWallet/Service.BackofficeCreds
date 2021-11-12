@@ -28,10 +28,10 @@ namespace Service.BackofficeCreds.Blazor.Engines
             foreach (var user in users)
             {
                 var userWithRoles = new UserWithRole() {User = user, Roles = new List<Role>()};
-                var userRoles = userInRole.Where(e => e.UserId == user.Id).ToList();
-                foreach (var roleId in userRoles.Select(e => e.RoleId).Distinct())
+                var userRoles = userInRole.Where(e => e.UserEmail == user.Email).ToList();
+                foreach (var roleName in userRoles.Select(e => e.RoleName).Distinct())
                 {
-                    var role = roles.FirstOrDefault(e => e.Id == roleId);
+                    var role = roles.FirstOrDefault(e => e.Name == roleName);
                     if (role != null)
                         userWithRoles.Roles.Add(role);
                 }
@@ -52,7 +52,7 @@ namespace Service.BackofficeCreds.Blazor.Engines
             foreach (var role in roles)
             {
                 var roleWithRights = new RoleWithRights() {Role = role, Rights = new List<Right>()};
-                var rolesRights = rightInRoles.Where(e => e.RoleId == role.Id);
+                var rolesRights = rightInRoles.Where(e => e.RoleName == role.Name);
                 foreach (var rightId in rolesRights.Select(e => e.RightId).Distinct())
                 {
                     var right = rights.FirstOrDefault(e => e.Id == rightId);
@@ -76,71 +76,64 @@ namespace Service.BackofficeCreds.Blazor.Engines
             await ctx.RoleCollection.Upsert(new Role() {Name = name}).On(e => e.Name).RunAsync();
         }
 
-        public async Task SetupRolesAsync(long userId, List<long> roles)
+        public async Task SetupRolesAsync(string userEmail, List<string> roles)
         {
             await using var ctx = _databaseContextFactory.Create();
 
-            var actualRoles = ctx.UserInRoleCollection.Where(e => e.UserId == userId);
+            var actualRoles = ctx.UserInRoleCollection.Where(e => e.UserEmail == userEmail);
             if (actualRoles.Any())
                 ctx.UserInRoleCollection.RemoveRange(actualRoles);
 
             if (roles != null && roles.Any())
-                await ctx.UserInRoleCollection.AddRangeAsync(roles.Select(e => new UserInRole(){UserId = userId, RoleId = e}));
+                await ctx.UserInRoleCollection
+                    .AddRangeAsync(roles.Select(e => new UserInRole(){UserEmail = userEmail, RoleName = e}));
 
             await ctx.SaveChangesAsync();
         }
-        public async Task SetupRightsAsync(long roleId, List<long> rights)
+        
+        public async Task SetupRightsAsync(string roleName, List<long> rights)
         {
             await using var ctx = _databaseContextFactory.Create();
 
-            var actualRights = ctx.RightInRoleCollection.Where(e => e.RoleId == roleId);
+            var actualRights = ctx.RightInRoleCollection.Where(e => e.RoleName == roleName);
             if (actualRights.Any())
                 ctx.RightInRoleCollection.RemoveRange(actualRights);
 
             if (rights != null && rights.Any())
-                await ctx.RightInRoleCollection.AddRangeAsync(rights.Select(e => new RightInRole() {RoleId = roleId, RightId = e}));
+                await ctx.RightInRoleCollection
+                    .AddRangeAsync(rights.Select(e => new RightInRole() {RoleName = roleName, RightId = e}));
 
             await ctx.SaveChangesAsync();
         }
 
-        public async Task InitRightsAsync(IEnumerable<string> rights)
+        public async Task RemoveUserAsync(string userEmail)
         {
             await using var ctx = _databaseContextFactory.Create();
             
-            await ctx.Database.ExecuteSqlRawAsync($"TRUNCATE TABLE {DatabaseContext.Schema}.{DatabaseContext.RightTableName};");
-
-            await ctx.RightCollection.AddRangeAsync(rights.Select(e => new Right() {Name = e}));
-            await ctx.SaveChangesAsync(); 
-        }
-
-        public async Task RemoveUserAsync(long userId)
-        {
-            await using var ctx = _databaseContextFactory.Create();
-            
-            var userInRoles = ctx.UserInRoleCollection.Where(e => e.UserId == userId);
+            var userInRoles = ctx.UserInRoleCollection.Where(e => e.UserEmail == userEmail);
             if (userInRoles.Any())
                 ctx.UserInRoleCollection.RemoveRange(userInRoles);
 
-            var user = ctx.UserCollection.FirstOrDefault(e => e.Id == userId);
+            var user = ctx.UserCollection.FirstOrDefault(e => e.Email == userEmail);
             if (user != null)
                 ctx.UserCollection.Remove(user);
             
             await ctx.SaveChangesAsync(); 
         }
 
-        public async Task RemoveRoleAsync(long roleId)
+        public async Task RemoveRoleAsync(string roleName)
         {
             await using var ctx = _databaseContextFactory.Create();
             
-            var userInRoles = ctx.UserInRoleCollection.Where(e => e.RoleId == roleId);
+            var userInRoles = ctx.UserInRoleCollection.Where(e => e.RoleName == roleName);
             if (userInRoles.Any())
                 ctx.UserInRoleCollection.RemoveRange(userInRoles);
             
-            var rightsInRole = ctx.RightInRoleCollection.Where(e => e.RoleId == roleId);
+            var rightsInRole = ctx.RightInRoleCollection.Where(e => e.RoleName == roleName);
             if (rightsInRole.Any())
                 ctx.RightInRoleCollection.RemoveRange(rightsInRole);
 
-            var role = ctx.RoleCollection.FirstOrDefault(e => e.Id == roleId);
+            var role = ctx.RoleCollection.FirstOrDefault(e => e.Name == roleName);
             if (role != null)
                 ctx.RoleCollection.Remove(role);
             

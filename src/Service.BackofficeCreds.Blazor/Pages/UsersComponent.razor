@@ -12,8 +12,9 @@
 <table class="table">
     <thead>
         <tr>
-            <th>User Id</th>
             <th>Email</th>
+            <th>Phone</th>
+            <th>Telegram</th>
             <th>Roles</th>
             <th></th>
         </tr>
@@ -22,8 +23,9 @@
         @foreach (var userWithRole in _usersWithRoles)
         {
             <tr>
-                <td>@userWithRole.User.Id</td>
                 <td>@userWithRole.User.Email</td>
+                <td>@userWithRole.User.Phone</td>
+                <td>@userWithRole.User.Telegram</td>
                 <td>
                     @foreach (var role in userWithRole.Roles)
                     {
@@ -125,7 +127,7 @@
 
     private async Task RemoveUser(User user)
     {
-        await _credManagerEngine.RemoveUserAsync(user.Id);
+        await _credManagerEngine.RemoveUserAsync(user.Email);
         await RefreshData();
     }
 
@@ -136,7 +138,7 @@
         _chosenRoles.AddRange(_roles.Select(e => new ChosenRole()
         {
             Role = e,
-            Chosen = _changeRoleUserTarget.Roles.Any(x => x.Id == e.Id)
+            Chosen = _changeRoleUserTarget.Roles.Any(x => x.Name == e.Name)
         }));
         StateHasChanged();
     }
@@ -154,7 +156,8 @@
         _changeRolesWindowOpen = false;
         StateHasChanged();
         
-        await _credManagerEngine.SetupRolesAsync(_changeRoleUserTarget.User.Id, _chosenRoles.Where(e => e.Chosen).Select(e => e.Role.Id).ToList());
+        await _credManagerEngine.SetupRolesAsync(_changeRoleUserTarget.User.Email, 
+            _chosenRoles.Where(e => e.Chosen).Select(e => e.Role.Name).ToList());
         await RefreshData();
         CancelChangeRoles();
     }

@@ -25,7 +25,7 @@ namespace Service.BackofficeCreds.Blazor.Services
             _logger.LogInformation("LoginAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
             try
             {
-                var token = await _boAuthEngine.Login(request.Email);
+                var token = await _boAuthEngine.Login(request.Service, request.Email);
 
                 if (string.IsNullOrWhiteSpace(token))
                     return new LoginResponse()
@@ -44,6 +44,29 @@ namespace Service.BackofficeCreds.Blazor.Services
                 var errorMessage = $"LoginAsync catch exception : {ex.Message}";
                 _logger.LogError(ex, errorMessage);
                 return new LoginResponse()
+                {
+                    Success = false,
+                    ErrorMessage = errorMessage
+                };
+            }
+        }
+        
+        public async Task<BaseResponse> InitRightsAsync(InitRightsRequest request)
+        {
+            _logger.LogInformation("InitRightsAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
+            try
+            {
+                await _boAuthEngine.InitRightsAsync(request.Service, request.Rights);
+                return new BaseResponse()
+                {
+                    Success = true
+                };
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = $"InitRightsAsync catch exception : {ex.Message}";
+                _logger.LogError(ex, errorMessage);
+                return new BaseResponse()
                 {
                     Success = false,
                     ErrorMessage = errorMessage

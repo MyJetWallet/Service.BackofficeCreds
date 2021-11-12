@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Service.BackofficeCreds.Domain.Models;
@@ -14,7 +11,7 @@ namespace Service.BackofficeCreds.Postgres
         private const string UserTableName = "user";
         private const string RoleTableName = "role";
         private const string UserInRoleTableName = "userinrole";
-        public const string RightTableName = "right";
+        private const string RightTableName = "right";
         private const string RightInRoleTableName = "rightinrole";
         
         public DbSet<User> UserCollection { get; set; }
@@ -53,11 +50,11 @@ namespace Service.BackofficeCreds.Postgres
         private void SetupDefaultData(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Role>()
-                .HasData(new Role() { Name = "Supervisor", IsSupervisor = true, Id = 1});
+                .HasData(new Role() { Name = "SupervisorRole", IsSupervisor = true});
             modelBuilder.Entity<User>()
-                .HasData(new User() { Email = "Supervisor", Id = 1});
+                .HasData(new User() { Email = "Supervisor", Phone = "empty", Telegram = "empty", IsActive = true});
             modelBuilder.Entity<UserInRole>()
-                .HasData(new UserInRole() { UserId = 1, RoleId = 1, Id = 1});
+                .HasData(new UserInRole() { UserEmail = "Supervisor", RoleName = "SupervisorRole", Id = 1});
         }
 
         private void SetRightInRoleEntity(ModelBuilder modelBuilder)
@@ -67,7 +64,7 @@ namespace Service.BackofficeCreds.Postgres
             modelBuilder.Entity<RightInRole>().Property(e => e.Id).UseIdentityColumn();
             modelBuilder.Entity<RightInRole>().HasKey(e => e.Id);
             
-            modelBuilder.Entity<RightInRole>().HasIndex(e => new {e.RightId, e.RoleId}).IsUnique();
+            modelBuilder.Entity<RightInRole>().HasIndex(e => new {e.RightId, e.RoleName}).IsUnique();
         }
 
         private void SetRightEntity(ModelBuilder modelBuilder)
@@ -79,7 +76,7 @@ namespace Service.BackofficeCreds.Postgres
             
             modelBuilder.Entity<Right>().Property(e => e.Name).HasMaxLength(64);
             
-            modelBuilder.Entity<Right>().HasIndex(e => e.Name).IsUnique();
+            modelBuilder.Entity<Right>().HasIndex(e => new{e.Name, e.Service}).IsUnique();
         }
 
         private void SetUserInRoleEntity(ModelBuilder modelBuilder)
@@ -89,31 +86,27 @@ namespace Service.BackofficeCreds.Postgres
             modelBuilder.Entity<UserInRole>().Property(e => e.Id).UseIdentityColumn();
             modelBuilder.Entity<UserInRole>().HasKey(e => e.Id);
             
-            modelBuilder.Entity<UserInRole>().HasIndex(e => new {e.UserId, e.RoleId}).IsUnique();
+            modelBuilder.Entity<UserInRole>().HasIndex(e => new {e.UserEmail, e.RoleName}).IsUnique();
         }
 
         private void SetRoleEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Role>().ToTable(RoleTableName);
             
-            modelBuilder.Entity<Role>().Property(e => e.Id).UseIdentityColumn();
-            modelBuilder.Entity<Role>().HasKey(e => e.Id);
+            modelBuilder.Entity<Role>().HasKey(e => e.Name);
             
             modelBuilder.Entity<Role>().Property(e => e.Name).HasMaxLength(64);
-            
-            modelBuilder.Entity<Role>().HasIndex(e => e.Name).IsUnique();
         }
 
         private void SetUserEntity(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().ToTable(UserTableName);
             
-            modelBuilder.Entity<User>().Property(e => e.Id).UseIdentityColumn();
-            modelBuilder.Entity<User>().HasKey(e => e.Id);
+            modelBuilder.Entity<User>().HasKey(e => e.Email);
             
             modelBuilder.Entity<User>().Property(e => e.Email).HasMaxLength(256);
-            
-            modelBuilder.Entity<User>().HasIndex(e => e.Email).IsUnique();
+            modelBuilder.Entity<User>().Property(e => e.Phone).HasMaxLength(64);
+            modelBuilder.Entity<User>().Property(e => e.Telegram).HasMaxLength(128);
         }
     }
 }

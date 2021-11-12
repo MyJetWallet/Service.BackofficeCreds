@@ -17,7 +17,8 @@ namespace Service.BackofficeCreds.Postgres.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                    Name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    Service = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -32,7 +33,7 @@ namespace Service.BackofficeCreds.Postgres.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     RightId = table.Column<long>(type: "bigint", nullable: false),
-                    RoleId = table.Column<long>(type: "bigint", nullable: false)
+                    RoleName = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -44,14 +45,12 @@ namespace Service.BackofficeCreds.Postgres.Migrations
                 schema: "backoffice_creds",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    Name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
                     IsSupervisor = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_role", x => x.Id);
+                    table.PrimaryKey("PK_role", x => x.Name);
                 });
 
             migrationBuilder.CreateTable(
@@ -59,13 +58,14 @@ namespace Service.BackofficeCreds.Postgres.Migrations
                 schema: "backoffice_creds",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Phone = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    Telegram = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_user", x => x.Id);
+                    table.PrimaryKey("PK_user", x => x.Email);
                 });
 
             migrationBuilder.CreateTable(
@@ -75,8 +75,8 @@ namespace Service.BackofficeCreds.Postgres.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
-                    RoleId = table.Column<long>(type: "bigint", nullable: false)
+                    UserEmail = table.Column<string>(type: "text", nullable: true),
+                    RoleName = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -86,54 +86,40 @@ namespace Service.BackofficeCreds.Postgres.Migrations
             migrationBuilder.InsertData(
                 schema: "backoffice_creds",
                 table: "role",
-                columns: new[] { "Id", "IsSupervisor", "Name" },
-                values: new object[] { 1L, true, "Supervisor" });
+                columns: new[] { "Name", "IsSupervisor" },
+                values: new object[] { "SupervisorRole", true });
 
             migrationBuilder.InsertData(
                 schema: "backoffice_creds",
                 table: "user",
-                columns: new[] { "Id", "Email" },
-                values: new object[] { 1L, "Supervisor" });
+                columns: new[] { "Email", "IsActive", "Phone", "Telegram" },
+                values: new object[] { "Supervisor", true, "empty", "empty" });
 
             migrationBuilder.InsertData(
                 schema: "backoffice_creds",
                 table: "userinrole",
-                columns: new[] { "Id", "RoleId", "UserId" },
-                values: new object[] { 1L, 1L, 1L });
+                columns: new[] { "Id", "RoleName", "UserEmail" },
+                values: new object[] { 1L, "SupervisorRole", "Supervisor" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_right_Name",
+                name: "IX_right_Name_Service",
                 schema: "backoffice_creds",
                 table: "right",
-                column: "Name",
+                columns: new[] { "Name", "Service" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_rightinrole_RightId_RoleId",
+                name: "IX_rightinrole_RightId_RoleName",
                 schema: "backoffice_creds",
                 table: "rightinrole",
-                columns: new[] { "RightId", "RoleId" },
+                columns: new[] { "RightId", "RoleName" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_role_Name",
-                schema: "backoffice_creds",
-                table: "role",
-                column: "Name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_user_Email",
-                schema: "backoffice_creds",
-                table: "user",
-                column: "Email",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_userinrole_UserId_RoleId",
+                name: "IX_userinrole_UserEmail_RoleName",
                 schema: "backoffice_creds",
                 table: "userinrole",
-                columns: new[] { "UserId", "RoleId" },
+                columns: new[] { "UserEmail", "RoleName" },
                 unique: true);
         }
 

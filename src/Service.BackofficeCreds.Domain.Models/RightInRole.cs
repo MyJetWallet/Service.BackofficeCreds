@@ -4,6 +4,6 @@ namespace Service.BackofficeCreds.Domain.Models
     {
         public long Id { get; set; }
         public long RightId { get; set; }
-        public long RoleId { get; set; }
+        public string RoleName { get; set; }
     }
 }

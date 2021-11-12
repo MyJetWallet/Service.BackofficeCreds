@@ -12,7 +12,6 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Role Id</th>
             <th>Name</th>
             <th>Is Supervisor</th>
             <th>Rights</th>
@@ -24,7 +23,6 @@
         @foreach (var roleWithRights in _roles)
         {
             <tr>
-                <td>@roleWithRights.Role.Id</td>
                 <td>@roleWithRights.Role.Name</td>
                 <td>@roleWithRights.Role.IsSupervisor</td>
                 <td>
@@ -126,7 +124,7 @@
 
     private async Task RemoveRole(Role role)
     {
-        await _credManagerEngine.RemoveRoleAsync(role.Id);
+        await _credManagerEngine.RemoveRoleAsync(role.Name);
         await RefreshData();
     }
 
@@ -160,7 +158,8 @@
         _changeRightsWindowOpen = false;
         StateHasChanged();
         
-        await _credManagerEngine.SetupRightsAsync(_changeRightsRoleTarget.Role.Id, _chosenRights.Where(e => e.Chosen).Select(e => e.Right.Id).ToList());
+        await _credManagerEngine.SetupRightsAsync(_changeRightsRoleTarget.Role.Name, 
+            _chosenRights.Where(e => e.Chosen).Select(e => e.Right.Id).ToList());
         await RefreshData();
         CancelChangeRights();
     }

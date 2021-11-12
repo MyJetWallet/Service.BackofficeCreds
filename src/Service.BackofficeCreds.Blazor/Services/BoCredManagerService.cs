@@ -71,7 +71,7 @@ namespace Service.BackofficeCreds.Blazor.Services
             _logger.LogInformation("SetupRolesAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
             try
             {
-                await _boCredManagerEngine.SetupRolesAsync(request.UserId, request.RolesId);
+                await _boCredManagerEngine.SetupRolesAsync(request.UserEmail, request.RolesName);
                 return new BaseResponse()
                 {
                     Success = true
@@ -89,35 +89,12 @@ namespace Service.BackofficeCreds.Blazor.Services
             }
         }
 
-        public async Task<BaseResponse> InitRightsAsync(InitRightsRequest request)
-        {
-            _logger.LogInformation("InitRightsAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
-            try
-            {
-                await _boCredManagerEngine.InitRightsAsync(request.Rights);
-                return new BaseResponse()
-                {
-                    Success = true
-                };
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = $"InitRightsAsync catch exception : {ex.Message}";
-                _logger.LogError(ex, errorMessage);
-                return new BaseResponse()
-                {
-                    Success = false,
-                    ErrorMessage = errorMessage
-                };
-            }
-        }
-
         public async Task<BaseResponse> RemoveUserAsync(RemoveUserRequest request)
         {
             _logger.LogInformation("RemoveUserAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
             try
             {
-                await _boCredManagerEngine.RemoveUserAsync(request.UserId);
+                await _boCredManagerEngine.RemoveUserAsync(request.UserEmail);
                 return new BaseResponse()
                 {
                     Success = true
@@ -140,7 +117,7 @@ namespace Service.BackofficeCreds.Blazor.Services
             _logger.LogInformation("RemoveRoleAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
             try
             {
-                await _boCredManagerEngine.RemoveRoleAsync(request.RoleId);
+                await _boCredManagerEngine.RemoveRoleAsync(request.RoleName);
                 return new BaseResponse()
                 {
                     Success = true

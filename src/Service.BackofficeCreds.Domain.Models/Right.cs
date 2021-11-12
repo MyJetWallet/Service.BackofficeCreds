@@ -4,5 +4,6 @@ namespace Service.BackofficeCreds.Domain.Models
     {
         public long Id { get; set; }
         public string Name { get; set; }
+        public string Service { get; set; }
     }
 }
