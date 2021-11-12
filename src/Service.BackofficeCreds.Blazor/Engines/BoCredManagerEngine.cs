@@ -64,10 +64,10 @@ namespace Service.BackofficeCreds.Blazor.Engines
             return rolesWithRights;
         }
 
-        public async Task CreateUserAsync(string email)
+        public async Task CreateUserAsync(string email, string phone, string telegram, bool isActive)
         {
             await using var ctx = _databaseContextFactory.Create();
-            await ctx.UserCollection.Upsert(new User() {Email = email}).On(e => e.Email).RunAsync();
+            await ctx.UserCollection.Upsert(new User() {Email = email, Phone = phone, Telegram = telegram, IsActive = isActive}).On(e => e.Email).RunAsync();
         }
         
         public async Task CreateRoleAsync(string name)

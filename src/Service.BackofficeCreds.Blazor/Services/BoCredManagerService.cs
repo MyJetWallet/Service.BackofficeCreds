@@ -25,7 +25,7 @@ namespace Service.BackofficeCreds.Blazor.Services
             _logger.LogInformation("CreateUserAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
             try
             {
-                await _boCredManagerEngine.CreateUserAsync(request.Email);
+                await _boCredManagerEngine.CreateUserAsync(request.Email, request.Phone, request.Telegram, request.IsActive);
                 return new BaseResponse()
                 {
                     Success = true

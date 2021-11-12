@@ -95,7 +95,10 @@
             NoButtonCaption="Cancel"
             OnSubmit="SubmitCreateUser">
             <ul class="nav">
-                <li><span style="margin-left: 10px; vertical-align: center">Email : </span><input type="text" style="width: auto" @bind="_newUserEmail"/></li>
+                <li><span style="margin-left: 10px; vertical-align: center">Email : </span><input type="text" style="width: auto" @bind="_newUser.Email"/></li>
+                <li><span style="margin-left: 10px; vertical-align: center">Phone : </span><input type="text" style="width: auto" @bind="_newUser.Phone"/></li>
+                <li><span style="margin-left: 10px; vertical-align: center">Telegram : </span><input type="text" style="width: auto" @bind="_newUser.Telegram"/></li>
+                <li><span style="margin-left: 10px; vertical-align: center">IsActive : </span><input type="text" style="width: auto" @bind="_newUser.IsActive"/></li>
             </ul>
         </BaseTwoButtonsDialog>
     </div>
@@ -110,7 +113,7 @@
     private readonly List<ChosenRole> _chosenRoles = new();
     
     private bool _createUserWindowOpen = false;
-    private string _newUserEmail = string.Empty;
+    private User _newUser = new User() {IsActive = true};
 
     protected override void OnInitialized()
     {
@@ -176,7 +179,7 @@
     private void CreateUser()
     {
         _createUserWindowOpen = true;
-        _newUserEmail = string.Empty;
+        _newUser = new User() {IsActive = true};
         
         StateHasChanged();
     }
@@ -184,7 +187,7 @@
     private void CancelCreateUser()
     {
         _createUserWindowOpen = false;
-        _newUserEmail = string.Empty;
+        _newUser = new User() {IsActive = true};
         
         StateHasChanged();
     }
@@ -194,7 +197,7 @@
         _createUserWindowOpen = false;
         StateHasChanged();
 
-        await _credManagerEngine.CreateUserAsync(_newUserEmail);
+        await _credManagerEngine.CreateUserAsync(_newUser.Email, _newUser.Phone, _newUser.Telegram, _newUser.IsActive);
         await RefreshData();
         CancelCreateUser();
     }
