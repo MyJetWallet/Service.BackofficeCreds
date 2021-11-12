@@ -9,6 +9,8 @@ namespace Service.BackofficeCreds.Grpc
     {
         [OperationContract]
         Task<LoginResponse> LoginAsync(LoginRequest request);
+        [OperationContract]
+        Task<LoginWithoutJwtResponse> LoginWithoutJwtAsync(LoginRequest request);
         
         [OperationContract]
         Task<BaseResponse> InitRightsAsync(InitRightsRequest request);

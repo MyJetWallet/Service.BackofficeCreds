@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -50,7 +51,39 @@ namespace Service.BackofficeCreds.Blazor.Services
                 };
             }
         }
-        
+
+        public async Task<LoginWithoutJwtResponse> LoginWithoutJwtAsync(LoginRequest request)
+        {
+            _logger.LogInformation("LoginAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
+            try
+            {
+                var (user, rights) = await _boAuthEngine.LoginWithoutJwt(request.Service, request.Email);
+
+                if (user == null)
+                    return new LoginWithoutJwtResponse()
+                    {
+                        Success = false,
+                        ErrorMessage = "Cannot find user"
+                    };
+                return new LoginWithoutJwtResponse()
+                {
+                    Success = true, 
+                    User = user,
+                    Rights = rights
+                };
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = $"LoginAsync catch exception : {ex.Message}";
+                _logger.LogError(ex, errorMessage);
+                return new LoginWithoutJwtResponse()
+                {
+                    Success = false,
+                    ErrorMessage = errorMessage
+                };
+            }
+        }
+
         public async Task<BaseResponse> InitRightsAsync(InitRightsRequest request)
         {
             _logger.LogInformation("InitRightsAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
