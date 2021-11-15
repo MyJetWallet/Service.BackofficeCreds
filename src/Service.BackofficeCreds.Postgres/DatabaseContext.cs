@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MyJetWallet.Sdk.Postgres;
 using Service.BackofficeCreds.Domain.Models;
 
 namespace Service.BackofficeCreds.Postgres
 {
-    public class DatabaseContext : DbContext
+    public class DatabaseContext : MyDbContext
     {
         public const string Schema = "backoffice_creds";
         
@@ -22,15 +23,6 @@ namespace Service.BackofficeCreds.Postgres
         
         public DatabaseContext(DbContextOptions options) : base(options)
         {
-        }
-        public static ILoggerFactory LoggerFactory { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (LoggerFactory != null)
-            {
-                optionsBuilder.UseLoggerFactory(LoggerFactory).EnableSensitiveDataLogging();
-            }
         }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
