@@ -11,5 +11,6 @@ namespace Service.BackofficeCreds.Grpc.Models
         [DataMember(Order = 2)] public string ErrorMessage { get; set; }
         [DataMember(Order = 3)] public User User { get; set; }
         [DataMember(Order = 4)] public List<Right> Rights { get; set; }
+        [DataMember(Order = 5)] public bool IsSupervisor { get; set; }
     }
 }

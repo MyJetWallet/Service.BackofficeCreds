@@ -57,7 +57,7 @@ namespace Service.BackofficeCreds.Blazor.Services
             _logger.LogInformation("LoginAsync received request: {requestJson}", JsonConvert.SerializeObject(request));
             try
             {
-                var (user, rights) = await _boAuthEngine.LoginWithoutJwt(request.Service, request.Email);
+                var (user, rights, isSupervisor) = await _boAuthEngine.LoginWithoutJwt(request.Service, request.Email);
 
                 if (user == null)
                     return new LoginWithoutJwtResponse()
@@ -69,7 +69,8 @@ namespace Service.BackofficeCreds.Blazor.Services
                 {
                     Success = true, 
                     User = user,
-                    Rights = rights
+                    Rights = rights,
+                    IsSupervisor = isSupervisor
                 };
             }
             catch (Exception ex)

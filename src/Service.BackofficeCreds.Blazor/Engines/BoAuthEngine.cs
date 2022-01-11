@@ -30,7 +30,7 @@ namespace Service.BackofficeCreds.Blazor.Engines
             
             var claims = new List<Claim> {new(ClaimTypes.Name, email)};
 
-            var serviceRights = GetRightsForUser(user, service, ctx);
+            var (serviceRights, isSupervisor) = GetRightsForUser(user, service, ctx);
 
             if (serviceRights.Any())
                 claims.AddRange(serviceRights.Select(right => new Claim(ClaimTypes.Role, right.Name)));
@@ -49,18 +49,20 @@ namespace Service.BackofficeCreds.Blazor.Engines
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private static List<Right> GetRightsForUser(User user, string service, DatabaseContext ctx)
+        private static (List<Right> rights, bool isSupervisor) GetRightsForUser(User user, string service, DatabaseContext ctx)
         {
             var rights = new List<Right>();
             
             var rolesNames = ctx.UserInRoleCollection
                 .Where(e => e.UserEmail == user.Email).Select(e => e.RoleName).ToList();
             if (!rolesNames.Any()) 
-                return rights;
+                return (rights, false);
             
             var roles = ctx.RoleCollection.Where(e => rolesNames.Contains(e.Name)).ToList();
             if (!roles.Any())
-                return rights;
+                return (rights, false);
+            
+            var isSupervisor = roles.Any(t => t.IsSupervisor);
             
             var rightsInRole = ctx.RightInRoleCollection
                 .Where(e => roles.Select(x => x.Name).Contains(e.RoleName))
@@ -73,20 +75,20 @@ namespace Service.BackofficeCreds.Blazor.Engines
             if (serviceRights.Any())
                 rights.AddRange(serviceRights);
 
-            return rights;
+            return (rights, isSupervisor);
         }
 
-        public async Task<(User, List<Right>)> LoginWithoutJwt(string service, string email)
+        public async Task<(User, List<Right>, bool isSupervisor)> LoginWithoutJwt(string service, string email)
         {
             await using var ctx = _databaseContextFactory.Create();
 
             var user = ctx.UserCollection.FirstOrDefault(e => e.Email == email);
             if (user == null || !user.IsActive)
-                return (null, null);
+                return (null, null, false);
 
-            var rights = GetRightsForUser(user, service, ctx);
+            var (rights, isSupervisor) = GetRightsForUser(user, service, ctx);
 
-            return (user, rights);
+            return (user, rights, isSupervisor);
         }
         
         public async Task InitRightsAsync(string service, List<string> rights)
