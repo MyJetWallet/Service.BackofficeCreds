@@ -7,7 +7,7 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.15.0" />
       <PackageReference Include="MyJetWallet.Sdk.GrpcSchema" Version="1.0.6" />
-      <PackageReference Include="MyJetWallet.Sdk.Postgres" Version="2.1.1" />
+      <PackageReference Include="MyJetWallet.Sdk.Postgres" Version="2.2.0" />
       <PackageReference Include="MyJetWallet.Sdk.Service" Version="2.1.6" />
       <PackageReference Include="MyJetYamlParser" Version="1.1.1" />
       <PackageReference Include="SimpleTrading.ServiceStatusReporterConnector" Version="1.0.9" />
