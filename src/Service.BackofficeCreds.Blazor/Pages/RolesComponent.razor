@@ -26,9 +26,16 @@
                 <td>@roleWithRights.Role.Name</td>
                 <td>@roleWithRights.Role.IsSupervisor</td>
                 <td>
-                    @foreach (var right in roleWithRights.Rights)
+                    @for (var index = 0; index < roleWithRights.Rights.Count; index++)
                     {
-                        <span style="background: lightblue; margin-left: 5px; border-radius: 5px"><span style="margin: 5px">@right.Name</span></span>
+                        var right = roleWithRights.Rights[index];
+                        <span style="background: lightblue; margin-left: 5px; border-radius: 5px">
+                            <span style="margin: 5px">@right.Name</span>
+                        </span>
+                        @if (index != 0 && index % 5 == 0)
+                        {
+                            <br/>
+                        }
                     }
                 </td>
                 <td>
@@ -37,9 +44,12 @@
                     </ul>
                 </td>
                 <td>
-                    <ul class="nav">
-                        <li><button type="button" class="btn btn-danger" @onclick="@(async () => { await RemoveRole(roleWithRights.Role); })">Remove</button></li>
-                    </ul>
+                    @if (!roleWithRights.Role.IsSupervisor)
+                    {
+                        <ul class="nav">
+                            <li><button type="button" class="btn btn-danger" @onclick="@(async () => { await RemoveRole(roleWithRights.Role); })">Remove</button></li>
+                        </ul>
+                    }
                 </td>
             </tr>
         }
